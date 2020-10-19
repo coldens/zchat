@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  main:
+    depends_on:
+      - db
+    restart: always
+    build: .
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - docket-zchat-bridge-network
+
+  db:
+    image: mongo:4.0.19
+    container_name: db_mongo
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - docket-zchat-bridge-network
+
+  redis:
+    image: redis:6.0.6-alpine
+    container_name: redis_zchat
+    volumes:
+      - redisdata:/data/db
+    ports:
+      - "6379:6379"
+    networks:
+      - docket-zchat-bridge-network
+
+volumes:
+  mongodata:
+  redisdata:
+
+networks:
+  docket-zchat-bridge-network:
+    driver: bridge
